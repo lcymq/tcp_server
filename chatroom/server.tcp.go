@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net"
 )
@@ -25,14 +26,14 @@ func main() {
 }
 
 func serverProcessor(conn net.Conn) {
+    defer conn.Close()
+    reader := bufio.NewReader(conn)
     // 与客户端通信
-    var msg = [128]byte{}
     for {
-        n, err := conn.Read(msg[:]) // 这里会阻塞
+        msg, err := Decode(reader)
         if err != nil {
-            fmt.Println("read from conn failed, err: ", err)
-            return
+            fmt.Print(conn.RemoteAddr().String(), "err: ", err)
         }
-        fmt.Print(conn.RemoteAddr().String(), ": ", string(msg[:n]))
+        fmt.Print(conn.RemoteAddr().String(), ": ", string(msg))
     }
 }

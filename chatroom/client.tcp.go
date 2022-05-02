@@ -14,6 +14,7 @@ func main() {
         fmt.Println("dial 127.0.0.1:20000 err: ", err)
         return
     }
+    defer conn.Close()
     // 发送数据
     reader := bufio.NewReader(os.Stdin)
     for {
@@ -22,7 +23,8 @@ func main() {
         if msg == "exit" {
             break
         }
-        conn.Write([]byte(msg))
+        msgb, _ := Encode(msg)
+        conn.Write(msgb)
     }
-    conn.Close()
+    
 }
